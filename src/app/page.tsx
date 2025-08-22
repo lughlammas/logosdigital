@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -21,7 +22,7 @@ import {
    Types
 ====================================================== */
 type Tier = { name: string; price: string; features: string[]; highlight?: boolean };
-type ServiceItem = { icon: JSX.Element; title: string; desc: string };
+type ServiceItem = { icon: ReactNode; title: string; desc: string };
 type Lang = "en" | "pt";
 
 /* ======================================================
