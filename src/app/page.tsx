@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Check,
   Sparkles,
-  Phone,
   Mail,
   MapPin,
   ArrowRight,
@@ -19,10 +18,15 @@ import {
 } from "lucide-react";
 
 /* ======================================================
-   COPY (EN + PT)
+   Types
 ====================================================== */
 type Tier = { name: string; price: string; features: string[]; highlight?: boolean };
+type ServiceItem = { icon: JSX.Element; title: string; desc: string };
+type Lang = "en" | "pt";
 
+/* ======================================================
+   COPY (EN + PT)
+====================================================== */
 const COPY = {
   en: {
     nav: { work: "Work", pricing: "Pricing", contact: "Contact", langLabel: "Language", toggleEN: "EN", togglePT: "PT" },
@@ -36,7 +40,7 @@ const COPY = {
       { icon: <Layout className="h-6 w-6" />, title: "Custom Landing Pages", desc: "Fast, mobile-first pages designed to turn visitors into leads." },
       { icon: <Rocket className="h-6 w-6" />, title: "Performance & SEO", desc: "Clean code, best practices, and indexing that helps you show up on Google." },
       { icon: <Wand2 className="h-6 w-6" />, title: "Animations & Micro-UX", desc: "Subtle motion and delightful details without hurting speed." },
-    ],
+    ] as ServiceItem[],
     sections: {
       portfolioKicker: "Portfolio",
       portfolioTitle: "Recent work",
@@ -62,6 +66,7 @@ const COPY = {
       formEmail: "Email or WhatsApp",
       formMsg: "What do you need?",
       formSend: "Send",
+      mapTip: "Tip: want a mini map or just a QR to Maps? I can add a QR that opens your exact location.",
     },
     footerText: "Art Meets Algorithm.",
   },
@@ -77,7 +82,7 @@ const COPY = {
       { icon: <Layout className="h-6 w-6" />, title: "Landing Pages Sob Medida", desc: "Páginas rápidas e mobile-first pensadas para gerar leads." },
       { icon: <Rocket className="h-6 w-6" />, title: "Performance & SEO", desc: "Código limpo, boas práticas e indexação para aparecer no Google." },
       { icon: <Wand2 className="h-6 w-6" />, title: "Animações & Micro-UX", desc: "Movimentos sutis e detalhes agradáveis sem perder velocidade." },
-    ],
+    ] as ServiceItem[],
     sections: {
       portfolioKicker: "Portfólio",
       portfolioTitle: "Trabalhos recentes",
@@ -107,9 +112,9 @@ const COPY = {
     },
     footerText: "Art Meets Algorithm.",
   },
-};
+} as const;
 
-type Lang = keyof typeof COPY;
+type Copy = typeof COPY["en"];
 
 /* ======================================================
    Anim helpers
@@ -126,15 +131,8 @@ const container = {
 /* ======================================================
    SectionTitle
 ====================================================== */
-function SectionTitle({
-  kicker,
-  title,
-  subtitle,
-}: {
-  kicker?: string;
-  title: string;
-  subtitle?: string;
-}) {
+function SectionTitle(props: { kicker?: string; title: string; subtitle?: string }) {
+  const { kicker, title, subtitle } = props;
   return (
     <div className="mx-auto max-w-2xl text-center">
       {kicker && (
@@ -151,26 +149,18 @@ function SectionTitle({
 /* ======================================================
    Navbar
 ====================================================== */
-function Navbar({
-  lang,
-  setLang,
-  c,
-}: {
-  lang: Lang;
-  setLang: (l: Lang) => void;
-  c: typeof COPY["en"];
-}) {
+function Navbar({ lang, setLang, c }: { lang: Lang; setLang: (l: Lang) => void; c: Copy }) {
   return (
     <div className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo only */}
         <a href="#" className="flex items-center">
           <Image
-            src="/logosdigital-logo.png"  // coloque esse arquivo em /public
+            src="/logosdigital-logo.png"
             alt="Logos Digital logo"
             width={240}
             height={240}
-            className="h-32 w-auto md:h-40 lg:h-48 object-contain"
+            className="h-32 w-auto object-contain md:h-40 lg:h-48"
             priority
           />
         </a>
@@ -189,9 +179,7 @@ function Navbar({
           </nav>
 
           <div className="flex items-center gap-2" title={`${c.nav.langLabel}: English / Português`}>
-            <span className="hidden text-xs text-muted-foreground sm:inline">
-              {c.nav.langLabel}
-            </span>
+            <span className="hidden text-xs text-muted-foreground sm:inline">{c.nav.langLabel}</span>
             <div className="inline-flex overflow-hidden rounded-full border shadow-sm">
               <button
                 onClick={() => setLang("en")}
@@ -225,13 +213,7 @@ function Navbar({
 /* ======================================================
    Hero
 ====================================================== */
-function Hero({
-  brand,
-  services,
-}: {
-  brand: typeof COPY["en"]["brand"];
-  services: { icon: JSX.Element; title: string; desc: string }[];
-}) {
+function Hero({ brand, services }: { brand: Copy["brand"]; services: ServiceItem[] }) {
   return (
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
@@ -285,7 +267,7 @@ function Hero({
 /* ======================================================
    Work
 ====================================================== */
-function Work({ c }: { c: typeof COPY["en"] }) {
+function Work({ c }: { c: Copy }) {
   return (
     <section id="work" className="container py-20">
       <SectionTitle
@@ -324,7 +306,7 @@ function Work({ c }: { c: typeof COPY["en"] }) {
 /* ======================================================
    Pricing
 ====================================================== */
-function Pricing({ c }: { c: typeof COPY["en"] }) {
+function Pricing({ c }: { c: Copy }) {
   const lang = c.nav.langLabel === "Language" ? "en" : "pt";
   return (
     <section id="pricing" className="bg-slate-50/40 py-20">
@@ -370,7 +352,7 @@ function Pricing({ c }: { c: typeof COPY["en"] }) {
 /* ======================================================
    Contact
 ====================================================== */
-function Contact({ c }: { c: typeof COPY["en"] }) {
+function Contact({ c }: { c: Copy }) {
   const C = c.contact;
   const lang = c.nav.langLabel === "Language" ? "en" : "pt";
 
@@ -419,16 +401,14 @@ function Footer({ text }: { text: string }) {
   return (
     <footer className="border-t py-10">
       <div className="container flex flex-col items-center justify-between gap-3 sm:flex-row">
-        <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Logos Digital
-        </p>
+        <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Logos Digital</p>
         <div className="flex items-center gap-2">
           <Image
-            src="/footer-vetor-image.png"  // substitua pelo seu arquivo final
+            src="/footer-vetor-image.png"
             alt={text}
             width={1600}
             height={400}
-            className="block h-32 w-auto md:h-48 lg:h-64 object-contain"
+            className="block h-32 w-auto object-contain md:h-48 lg:h-64"
             priority
           />
           <span className="sr-only">{text}</span>
@@ -442,13 +422,13 @@ function Footer({ text }: { text: string }) {
    Page
 ====================================================== */
 export default function LandingPage() {
-  const [lang, setLang] = useState<Lang>("pt"); // default PT; troque para "en" se quiser
-  const c = COPY[lang];
+  const [lang, setLang] = useState<Lang>("pt"); // default PT
+  const c: Copy = COPY[lang];
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-white to-slate-50 text-slate-900">
       <Navbar lang={lang} setLang={setLang} c={c} />
-      <Hero brand={c.brand} services={c.services as any} />
+      <Hero brand={c.brand} services={c.services} />
       <Pricing c={c} />
       <Work c={c} />
       <Contact c={c} />
